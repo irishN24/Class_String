@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 class String
@@ -9,21 +9,21 @@ class String
 public:
     String(int l = 0); // конструктор по умолчанию
     String(const char *s); // конструктор копирует содержимое переданной строки
-    String(const String &); // конструктор копирования: создаёт копию объекта String
+    String(const String &s); // конструктор копирования: создаёт копию объекта String
     ~String() { //деструктор ++
         if(str) delete []str; str = NULL;
     }
     int strLength(); // длина строки
-    String & operator = (const String &);
+    String & operator = (const String &s2); // ++
     char &operator [](int i){ //возвращает i-ый элемент строки ++
         return str[i];
     }
-    bool operator == (String &);
-    bool operator != (String &);
-    String operator + (const String &);
+    bool operator == (String &s); // ++
+    bool operator != (String &); // ++
+    String operator + (const String &s2); // ++
     String & operator += (const String &s2); // к первой строке приписываем вторую и возвращвем первую
-    friend istream & operator >> (istream &, String &);
-    friend ostream & operator << (ostream &, String &);
+    friend istream & operator >> (istream &is, String &s); // ++
+    friend ostream & operator << (ostream &os, String &s); // ++
     int BMSearch(String &);
 };
 String::String(int l){ // конструктор по умолчанию ++
@@ -44,6 +44,26 @@ String::String(const String &s){
         len--;
     }
 }
+String &String::operator = (const String &s2){
+    if(this == &s2) return *this;
+    delete []str;
+    len = s2.len;
+    str = new char [len + 1];
+    strcpy(str, s2.str);
+    return *this;
+}
+bool String ::operator == (String &s){
+    return strcmp(str, s.str) == 0;
+}
+bool String ::operator != (String &s){
+    return strcmp(str, s.str) != 0;
+}
+String String::operator + (const String &s2){
+    String rez(len + s2.len);
+    strcpy(rez.str, str);
+    strcat(rez.str, s2.str);
+    return rez;
+}
 String &String::operator += (const String &s2){
     len += s2.len;
     char *t = new char[len + 1];
@@ -57,7 +77,7 @@ int String::strLength(){
     return len;
 }
 istream & operator >> (istream &is, String &s){
-    char temp[100];
+    char temp[1000];
     is >> temp;
     s = String(temp);
     return is;
@@ -70,5 +90,14 @@ int main()
 {
     String s1("На дворе трава на траве дрова");
     String s2("траве");
+    cout << "s1 = " << s1 << "\n";
+    cout << "s2 = " << s2 << "\n";
+    String s3 = s1 + s2;
+    cout << "s3 = " << s3 << "\n";
+    String s4("gfhyrgtdh");
+    s3 += s4;
+    cout << "s4 = " << s3 << "\n";
+    if(s1 == s3){
 
+    }
 }
