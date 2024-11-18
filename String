@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 
+
 using namespace std;
 class String
 {
@@ -59,7 +60,7 @@ bool String ::operator != (String &s){
     return strcmp(str, s.str) != 0;
 }
 String String::operator + (const String &s2){
-    String rez(len + s2.len);
+    String rez(len + s2.len + 1);
     strcpy(rez.str, str);
     strcat(rez.str, s2.str);
     return rez;
@@ -85,6 +86,43 @@ istream & operator >> (istream &is, String &s){
 ostream & operator << (ostream &os, String &s){
     os << s.str;
     return os;
+}
+int String::BMSearch(String &obr){
+    int temp[256];
+    int lp = obr.len;
+    int ls = len;
+    if (lp > ls){
+        return -1;
+    }
+    for(int i = 0; i < 256; temp[i] = lp, i++){
+        for (int i = 0; i < lp - 1; i++){
+            temp [obr[i]] = lp - i - 1;
+        }
+    }
+    int i = lp - 1;
+    int j = i;
+    while(j >= 0){
+        if (j < 0){
+            return i + 1 - lp;
+        }
+        int k = i;
+        j = lp - 1;
+        while (j >= 0) {
+            if(str[k] == obr[j]){
+                j--;
+                k--;
+            }
+            else{
+                i += temp[str[i]];
+                j = lp - 1;
+                break;
+            }
+        }
+    }
+    if (j >= 0){
+        return -1;
+    }
+    return i + 1 - lp;
 }
 int main()
 {
