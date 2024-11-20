@@ -1,145 +1,158 @@
 #include <iostream>
 #include <cstring>
 
-
 using namespace std;
+
 class String
 {
-    char *str;
+    char* str;
     int len;
 public:
     String(int l = 0); // конструктор по умолчанию
-    String(const char *s); // конструктор копирует содержимое переданной строки
-    String(const String &s); // конструктор копирования: создаёт копию объекта String
-    ~String() { //деструктор ++
-        if(str) delete []str; str = NULL;
+    String(const char* s); // конструктор копирует содержимое переданной строки
+    String(const String& s); // конструктор копирования: создаёт копию объекта String
+    ~String() { //деструктор
+        delete[]str;
     }
-    int strLength(); // длина строки
-    String & operator = (const String &s2); // ++
-    char &operator [](int i){ //возвращает i-ый элемент строки ++
+    int strLength() const; // длина строки
+    String& operator = (const String& s2); // ++
+    char& operator [](int i) const { //возвращает i-ый элемент строки ++
         return str[i];
     }
-    bool operator == (String &s); // ++
-    bool operator != (String &); // ++
-    String operator + (const String &s2); // ++
-    String & operator += (const String &s2); // к первой строке приписываем вторую и возвращвем первую
-    friend istream & operator >> (istream &is, String &s); // ++
-    friend ostream & operator << (ostream &os, String &s); // ++
-    int BMSearch(String &);
+    bool operator == (const String& s) const; // ++
+    bool operator != (const String& s) const; // ++
+    String operator + (const String& s2) const; // ++
+    //String& operator += (const String& s2); // к первой строке приписываем вторую и возвращвем первую
+    friend istream& operator >> (istream& is, String& s); // ++
+    friend ostream& operator << (ostream& os, const String& s); // ++
+    int BMSearch(const String&) const;
 };
-String::String(int l){ // конструктор по умолчанию ++
-    str = new char[l];
+
+String::String(int l) { // конструктор по умолчанию ++
+    str = new char[l + 1];
     len = 0;
     str[0] = '\0';
 }
-String::String(const char *s){ // конструктор копирует содержимое переданной строки ++
-    str = new char[strlen(s) + 1];
-    for(len = 0; s[len] != 0; len++){
-        str[len] = s[len];
+
+String::String(const char* s) { // конструктор копирует содержимое переданной строки ++
+    if (s == nullptr) {
+        len = 0;
+        str = new char[1];
+        str[0] = '\0';
     }
-    str[len] = '\0';
+    else {
+        len = strlen(s);
+        str = new char[len + 1];
+        strcpy_s(str, len + 1, s);
+    }
 }
-String::String(const String &s){
+
+String::String(const String& s) {
     len = s.len;
-    str = new char[s.len + 1];
-    strcpy(str, s.str);
+    str = new char[len + 1];
+    strcpy_s(str, len + 1, s.str);
 }
-String &String::operator = (const String &s2){
-    if(this == &s2) return *this;
-    delete []str;
+
+String& String::operator = (const String& s2) {
+    if (this == &s2) return *this;
+    delete[]str;
     len = s2.len;
-    str = new char [len + 1];
-    strcpy(str, s2.str);
+    str = new char[len + 1];
+    strcpy_s(str, len + 1, s2.str);
     return *this;
 }
-bool String ::operator == (String &s){
+
+bool String::operator == (const String& s) const {
     return strcmp(str, s.str) == 0;
 }
-bool String ::operator != (String &s){
+
+bool String::operator != (const String& s) const {
     return strcmp(str, s.str) != 0;
 }
-String String::operator + (const String &s2){
+
+String String::operator + (const String& s2) const {
     String rez(len + s2.len + 1);
-    strcpy(rez.str, str);
-    strcat(rez.str, s2.str);
+    strcpy_s(rez.str, len + 1, str);
+    strcat_s(rez.str, len + s2.len + 1, s2.str);
     return rez;
 }
-String &String::operator += (const String &s2){
-    len += s2.len;
-    char *t = new char[len + 1];
-    strcpy_s(t, len +1, str);
-    strcat_s(t, len + 1, s2.str);
-    delete []str;
-    str = t;
+
+/*String& String::operator+=(const String& s) {
+    char* new_str = new char[len + s.len + 1];
+    strcpy(new_str, str);
+    strcat(new_str, s.str);
+    delete[] str;
+    str = new_str;
+    len = strlen(str);
     return *this;
-}
-int String::strLength(){
+}*/
+int String::strLength() const {
     return len;
 }
-istream & operator >> (istream &is, String &s){
+
+istream& operator >> (istream& is, String& s) {
     char temp[1000];
     is >> temp;
     s = String(temp);
     return is;
 }
-ostream & operator << (ostream &os, String &s){
+
+ostream& operator << (ostream& os, const String& s) {
     os << s.str;
     return os;
 }
-int String::BMSearch(String &obr){
-    int temp[521];
+
+int String::BMSearch(const String& obr) const {
+    int temp[256];
     int lp = obr.len;
     int ls = len;
-    if (lp > ls){
+    /*if (lp > ls) {
         return -1;
+    }*/
+    for (int i = 0; i < 256; i++) {
+        temp[i] = lp;
     }
-    for(int i = 0; i < 521; temp[i] = lp, i++){
-        for (int i = 0; i < lp - 1; i++){
-            temp [obr[i]] = lp - i - 1;
-        }
+    for (int i = 0; i < lp - 1; i++) {
+        temp[obr[i]] = lp - i - 1;
     }
     int i = lp - 1;
-    int j = i;
-    while(j >= 0){
-        if (j < 0){
-            return i + 1 - lp;
+    while (i < ls) {
+        int j = lp - 1;
+        while (j >= 0 && str[i] == obr[j]) {
+            i--;
+            j--;
         }
-        int k = i;
-        j = lp - 1;
-        while (j >= 0) {
-            if(str[k] == obr[j]){
-                j--;
-                k--;
-            }
-            else{
-                i += temp[str[i]];
-                j = lp - 1;
-                break;
-            }
+        if (j < 0) {
+            return i + 1;
         }
+        i += max(temp[str[i]], lp - j);
     }
-    if (j >= 0){
-        return -1;
-    }
-    return i + 1 - lp;
+    return -1;
 }
+
 int main()
 {
-    String s1("Better the devil you know than the devil you don't.");
-    String s2("know");
+    String s1("Don’t cross the bridge until you come to it.");
+    String s2("It's a proverb");
     cout << "s1 = " << s1 << "\n";
     cout << "s2 = " << s2 << "\n";
     String s3 = s1 + s2;
     cout << "s3 = " << s3 << "\n";
-    String s4("gfhyrgtdh");
-    s4 += s2;
-    cout << "s4 = " << s4 << "\n";
-    if(s1 == s3){
+    /*String s4("gfhyrgtdh");
+    s3 += s4;
+    cout << "s4 = " << s3 << "\n";*/
+    if (s1 == s3) {
         cout << "s1 == s3\n";
     }
-    else{
+    else {
         cout << "s1 != s3\n";
     }
-    cout << s1.BMSearch(s2);
+
+    String s6("If it is not broke, don’t fix it.");
+    String sBM("bro");
+    int index = s6.BMSearch(sBM);
+    String sBM2("aaaa");
+    int index2 = s6.BMSearch(sBM2);
+    std::cout << index << std::endl;
     return 0;
 }
