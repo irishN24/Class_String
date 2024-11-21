@@ -5,8 +5,8 @@ using namespace std;
 
 class String
 {
-    char* str;
-    int len;
+    char* str; // указатель на массив символов
+    int len; // длина строки
 public:
     String(int l = 0); // конструктор по умолчанию
     String(const char* s); // конструктор копирует содержимое переданной строки
@@ -15,110 +15,112 @@ public:
         delete[]str;
     }
     int strLength() const; // длина строки
-    String& operator = (const String& s2); // ++
-    char& operator [](int i) const { //возвращает i-ый элемент строки ++
+    String& operator = (const String& s2); // присваивание
+    char& operator [](int i) const { //возвращает i-ый элемент строки
         return str[i];
     }
-    bool operator == (const String& s) const; // ++
-    bool operator != (const String& s) const; // ++
-    String operator + (const String& s2) const; // ++
-    String& operator += (const String& s2); // к первой строке приписываем вторую и возвращвем первую
-    friend istream& operator >> (istream& is, String& s); // ++
-    friend ostream& operator << (ostream& os, const String& s); // ++
-    int BMSearch(const String&) const;
+    bool operator == (const String& s) const; // оператор равенства
+    bool operator != (const String& s) const; // оператор неравенства
+    String operator + (const String& s2) const; // оператор конкатенации
+    String& operator += (const String& s2); // оператор конкатенации
+    friend istream& operator >> (istream& is, String& s); // ввод
+    friend ostream& operator << (ostream& os, const String& s); // вывод
+    int BMSearch(const String&) const; // БМ поиск
 };
 
-String::String(int l) { // конструктор по умолчанию ++
-    str = new char[l + 1];
-    len = 0;
+String::String(int l) { // конструктор по умолчанию
+    str = new char[l + 1]; // выделяем память l+1
+    len = 0; // устанавливаем длину по умолчанию 0
     str[0] = '\0';
 }
-String::String(const char* s) { // конструктор копирует содержимое переданной строки ++
-    if (s == nullptr) {
+String::String(const char* s) { // конструктор копирует содержимое переданной строки
+    if (s == nullptr) { //создаём пустую строку
         len = 0;
         str = new char[1];
         str[0] = '\0';
     }
-    else {
+    else { // выделяет длину s, память и копирует строку
         len = strlen(s);
         str = new char[len + 1];
         strcpy_s(str, len + 1, s);
     }
 }
-String::String(const String& s) {
-    len = s.len;
-    str = new char[len + 1];
-    strcpy_s(str, len + 1, s.str);
+String::String(const String& s) { //конструктор копирования
+    len = s.len; // копируем длину
+    str = new char[len + 1]; // выделяем память
+    strcpy_s(str, len + 1, s.str); // копируем содержимое из s
 }
-String& String::operator = (const String& s2) {
-    if (this == &s2) return *this;
-    delete[]str;
+int String::strLength() const { //возвращает длину строки
+    return len;
+}
+String& String::operator = (const String& s2) { // присванивание
+    if (this == &s2) return *this; //проверка: не присваиваем ли самому себе
+    delete[]str; // освобождаем память, выделенную под строку
     len = s2.len;
     str = new char[len + 1];
     strcpy_s(str, len + 1, s2.str);
     return *this;
 }
-bool String::operator == (const String& s) const {
+bool String::operator == (const String& s) const { //равенство
     return strcmp(str, s.str) == 0;
 }
 
-bool String::operator != (const String& s) const {
+bool String::operator != (const String& s) const { // неравенство
     return strcmp(str, s.str) != 0;
 }
-String String::operator + (const String& s2) const {
-    String rez(len + s2.len + 1);
+String String::operator + (const String& s2) const { // конкатенация
+    String rez(len + s2.len + 1); // новый объект с длиной s + s2;
     rez.len = len + s2.len;
     strcpy_s(rez.str, rez.len + 1, str);
     strcat_s(rez.str, rez.len + 1, s2.str);
     return rez;
 }
-String &String::operator+=(const String& s) {
-    char *t = new char[len + 1];
-    strcpy_s(t, len + 1, str);
-    delete[] str;
-    len = len + s.len;
+String &String::operator+=(const String& s) { //конкатенация
+    char *t = new char[len + 1]; // буфер
+    strcpy_s(t, len + 1, str); // копируем в буфер строку
+    delete[] str; // освобождаем память, выделенную под строку
+    len = len + s.len; // новая память для объединённой строки
     str = new char[len + 1];
     strcpy_s(str, len + 1, t);
     strcat_s(str, len + 1, s.str);
-    delete[] t;
+    delete[] t; // освобождаем память в буфере
     return *this;
 }
-int String::strLength() const {
-    return len;
-}
-istream& operator >> (istream& is, String& s) {
-    char temp[1000];
+istream& operator >> (istream& is, String& s) { // дружественный опрератор ввода
+    char temp[1000]; // буфер
     is >> temp;
     s = String(temp);
     return is;
 }
 
-ostream& operator << (ostream& os, const String& s) {
+ostream& operator << (ostream& os, const String& s) { // дружественный оператор вывода
     os << s.str;
     return os;
 }
 
-int String::BMSearch(const String& obr) const {
-    int temp[256];
-    int lp = obr.len;
-    int ls = len;
+int String::BMSearch(const String& obr) const { // БМ поиск
+    int temp[256]; // таблица смещений
     for (int i = 0; i < 256; i++) {
-        temp[i] = lp;
+        temp[i] = obr.len;
     }
-    for (int i = 0; i < lp - 1; i++) {
-        temp[obr[i]] = lp - i - 1;
+    for (int i = 0; i < obr.len - 1; i++) {
+        temp[obr[i]] = obr.len - 1 - i;
     }
-    int i = lp - 1;
-    while (i < ls) {
-        int j = lp - 1;
-        while (j >= 0 && str[i] == obr[j]) {
-            i--;
+    int i = obr.len - 1;
+    int j = obr.len - 1;
+    while (i < len) {
+        j = obr.len - 1;
+        int k = i;
+        while (j >= 0 && str[k] == obr[j]) {
+            k--;
             j--;
         }
-        if (j < 0) {
-            return i + 1;
+        if (j == -1) {
+            return k + 1;
         }
-        i += max(temp[str[i]], lp - j);
+        else{
+            i += temp[str[i]];
+        }
     }
     return -1;
 }
