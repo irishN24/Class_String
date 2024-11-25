@@ -86,7 +86,7 @@ String &String::operator+=(const String& s) { //конкатенация
     delete[] t; // освобождаем память в буфере
     return *this;
 }
-istream& operator >> (istream& is, String& s) { // дружественный опрератор ввода
+istream& operator >> (istream& is, String& s) { // дружественный опрератор ввода (не работает)
     char temp[1000]; // буфер
     is >> temp;
     s = String(temp);
@@ -109,7 +109,6 @@ int String::BMSearch(const String& obr) const { // БМ поиск
     int i = obr.len - 1;
     int j = obr.len - 1;
     while (i < len) {
-        j = obr.len - 1;
         int k = i;
         while (j >= 0 && str[k] == obr[j]) {
             k--;
@@ -128,9 +127,12 @@ int String::BMSearch(const String& obr) const { // БМ поиск
 int main()
 {
     String s1("Do not cross the bridge until you come to it.");
-    String s2(" It is a proverb");
+    String s2;
+
     cout << "s1 = " << s1 << "\n";
-    cout << "s2 = " << s2 << "\n";
+
+    cout << "s2 = ";
+    cin >> s2;
     String s3 = s1 + s2;
     cout << "s3 = " << s3 << "\n";
     String s4("jghtyufjsdbacaf");
