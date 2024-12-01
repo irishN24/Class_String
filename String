@@ -12,7 +12,7 @@ public:
     String(const char* s); // конструктор копирует содержимое переданной строки
     String(const String& s); // конструктор копирования: создаёт копию объекта String
     ~String() { //деструктор
-        if(str){
+        if (str) {
             delete[]str;
             str = NULL;
         }
@@ -76,8 +76,8 @@ String String::operator + (const String& s2) const { // конкатенация
     strcat_s(rez.str, rez.len + 1, s2.str);
     return rez;
 }
-String &String::operator+=(const String& s) { //конкатенация
-    char *t = new char[len + 1]; //= str
+String& String::operator+=(const String& s) { //конкатенация
+    char* t = new char[len + 1]; //= str
     strcpy_s(t, len + 1, str);
     delete[] str;
     len = len + s.len;
@@ -99,28 +99,28 @@ ostream& operator << (ostream& os, const String& s) { // дружественн�
 }
 int String::BMSearch(const String& obr) const { // БМ поиск
     int temp[256]; // таблица смещений
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; i++) { //все элементы таблицы сначала равны длине образца.
         temp[i] = obr.len;
     }
-    for (int i = 0; i < obr.len - 1; i++) {
+    for (int i = 0; i < obr.len - 1; i++) { // формирование таблицы
         temp[obr[i]] = obr.len - 1 - i;
     }
-    int i = obr.len - 1;
-    int j = obr.len - 1;
+    int i = obr.len - 1;//индекс для текста
+    int j = obr.len - 1;//индекс для образца
     while (i < len) {
-        int k = i;
+        int k = i; //позиция для сравнения
         while (j >= 0 && str[k] == obr[j]) {
-            k--;
-            j--;
+            k--; //сдвиг влево по тексту
+            j--; //сдвиг влево по образцу
         }
-        if (j == -1) {
+        if (j == -1) { //совпадение найдено
             return k + 1;
         }
-        else{
-            i += temp[str[i]];
+        else { //если совпадение не найдено
+            i += temp[str[i]]; //сдвиг на позиции из таблицы
         }
     }
-    return -1;
+    return -1; //если не найдено совпадений.
 }
 int main()
 {
@@ -155,7 +155,7 @@ int main()
     cout << "A pattern to search for BM-search: " << sBM << "\n";
     int index = s6.BMSearch(sBM);
     String sBM2("aaaa");
-     cout << "A pattern to search for BM-search: " << sBM2 << "\n";
+    cout << "A pattern to search for BM-search: " << sBM2 << "\n";
     int index2 = s6.BMSearch(sBM2);
     cout << "BM Search (bro): " << index << std::endl;
     cout << "BM Search (aaaa): " << index2 << std::endl;
