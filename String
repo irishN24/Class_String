@@ -98,29 +98,73 @@ ostream& operator << (ostream& os, const String& s) { // дружественн�
     return os;
 }
 int String::BMSearch(const String& obr) const { // БМ поиск
-    int temp[256]; // таблица смещений
-    for (int i = 0; i < 256; i++) { //все элементы таблицы сначала равны длине образца.
-        temp[i] = obr.len;
-    }
-    for (int i = 0; i < obr.len - 1; i++) { // формирование таблицы
-        temp[obr[i]] = obr.len - 1 - i;
-    }
-    int i = obr.len - 1;//индекс для текста
-    int j = obr.len - 1;//индекс для образца
-    while (i < len) {
-        int k = i; //позиция для сравнения
-        while (j >= 0 && str[k] == obr[j]) {
-            k--; //сдвиг влево по тексту
-            j--; //сдвиг влево по образцу
+    /*if (obr.len <= len) {
+        int temp[256]; // таблица смещений
+        for (int i = 0; i < 256; i++) { //все элементы таблицы сначала равны длине образца.
+            temp[i] = obr.len;
         }
-        if (j == -1) { //совпадение найдено
-            return k + 1;
+        for (int i = 0; i < obr.len - 1; i++) { // формирование таблицы
+            temp[obr[i]] = obr.len - 1 - i;
         }
-        else { //если совпадение не найдено
-            i += temp[str[i]]; //сдвиг на позиции из таблицы
+        int i = obr.len - 1;//индекс для текста
+        int f = 0;
+        while (i < len) {
+            int k = i;
+            int j = obr.len - 1;
+            while (j >= 0 && str[k] == obr[j]) {
+                j--;
+                k--;
+            }
+            if (j < 0) {
+                f = 1;
+                break;
+            }
+            else {
+                i += temp[str[i]];
+            }
+        }
+        if (f == 0) {
+            return -1;
+        }
+        else {
+            return i + 1 - obr.len;
         }
     }
-    return -1; //если не найдено совпадений.
+    return -1; //если не найдено совпадений.*/
+
+    if (obr.len <= len) {
+        int temp[256]; // таблица смещений
+        for (int i = 0; i < 256; i++) { //все элементы таблицы сначала равны длине образца.
+            temp[i] = obr.len;
+        }
+        for (int i = 0; i < obr.len - 1; i++) { // формирование таблицы
+            temp[obr[i]] = obr.len - 1 - i;
+        }
+        int i = obr.len - 1;//индекс для текста
+        int j = obr.len - 1;//индекс для образца
+        while (i < len && j >= 0) {
+                int k = i;
+                j = obr.len - 1;
+                while (j >= 0) {
+                    if (str[k] == obr[j]) {
+                        j--;
+                        k--;
+                    }
+                    else {
+                        i += temp[str[i]];
+                        j = obr.len - 1;
+                        break;
+                    }
+                }
+        }
+        if (j >= 0) {
+            return -1;
+        }
+        else {
+            return i + 1 - obr.len;
+        }
+     }
+    return -1; //если не найдено совпадений.*/
 }
 int main()
 {
@@ -157,7 +201,7 @@ int main()
     String sBM2("aaaa");
     cout << "A pattern to search for BM-search: " << sBM2 << "\n";
     int index2 = s6.BMSearch(sBM2);
-    cout << "BM Search (bro): " << index << std::endl;
-    cout << "BM Search (aaaa): " << index2 << std::endl;
+    cout << "BM Search (" << sBM << "): " << index << std::endl;
+    cout << "BM Search (" << sBM2 << "): " << index2 << std::endl;
     return 0;
 }
